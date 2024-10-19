@@ -9,5 +9,8 @@
       ],
       "settings": {}
     }
+  },
+  "postAttachCommand": {
+    "minikube-start": "minikube profile list | grep dev | grep Running || minikube start -p dev"
   }
 }
