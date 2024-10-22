@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+FISSION_CRDS ?= github.com/fission/fission/crds/v1
+FISSION_NAMESPACE ?= fission
+FISSION_REPO ?= https://fission.github.io/fission-charts
+
+all: install-fission
+
 cruft-update:
 ifeq (,$(wildcard .cruft.json))
 	@echo "Cruft not configured"
@@ -19,3 +25,27 @@ else
 	@cruft check || cruft update --skip-apply-ask --refresh-private-variables
 endif
 .PHONY: cruft-update
+
+install-fission:
+	@echo "Installing CRDs..."
+	@kubectl create -k ${FISSION_CRDS} || true
+
+	@echo "Installing Fission..."
+	@helm upgrade \
+		--atomic \
+		--cleanup-on-fail \
+		--create-namespace \
+		--install \
+		--namespace ${FISSION_NAMESPACE} \
+		--repo ${FISSION_REPO} \
+		--reset-values \
+		--set serviceType=NodePort,routerServiceType=NodePort \
+		--wait \
+		fission fission-all
+
+	@echo "Verifying Fission..."
+	@fission version
+
+	@echo "Checking Fission..."
+	@fission check
+.PHONY: install-fission

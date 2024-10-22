@@ -1,7 +1,12 @@
 {
   "image": "ghcr.io/mrsimonemms/devcontainers/full",
   "name": "devcontainer",
-  "features": {},
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/gh-release:1": {
+      "repo": "fission/fission",
+      "binaryNames": "fission"
+    }
+  },
   "customizations": {
     "vscode": {
       "extensions": [
